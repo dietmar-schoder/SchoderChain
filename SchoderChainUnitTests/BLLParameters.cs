@@ -1,4 +1,6 @@
-﻿namespace SchoderChain
+﻿using SchoderChain;
+
+namespace SchoderChainUnitTests
 {
     public class BLLParameters : Parameters
     {

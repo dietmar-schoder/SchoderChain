@@ -28,8 +28,8 @@ namespace SchoderChainUnitTests
             // Then I expect both processors to be processed
             Assert.AreEqual("TestProcessor1TestProcessor2", string.Concat(parameters.StackTrace));
 
-            // Then I expect the Email in the parameters still to be filled
-            Assert.AreEqual("test", parameters.Email);
+            // And I expect the Email in the parameters to be changed
+            Assert.AreEqual("test2", parameters.Email);
         }
 
         [TestMethod]

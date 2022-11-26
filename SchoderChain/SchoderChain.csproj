@@ -6,6 +6,16 @@
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Dietmar Schoder Chain Pattern</Title>
+    <PackageId>Schoder.Chain</PackageId>
+    <Authors>dietmarschoder</Authors>
+    <Company>Schoder Factory Ltd</Company>
+    <Description>Schoder Chain Pattern Utility</Description>
+    <Copyright>2022 Schoder Factory Ltd</Copyright>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
