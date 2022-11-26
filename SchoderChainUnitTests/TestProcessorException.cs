@@ -4,10 +4,10 @@ namespace SchoderChainUnitTests
 {
 	public class TestProcessorException : Processor
 	{
-        public TestProcessorException(ISlackManager slackManager) : base(slackManager) { }
+        public TestProcessorException(ChainData chainData, ISlackManager slackManager) : base(chainData, slackManager) { }
 
 #pragma warning disable 1998
-        protected override async Task<bool> ProcessOkAsync<BLLParameters>(BLLParameters parameters)
+        protected override async Task<bool> ProcessOkAsync()
 #pragma warning restore 1998
         {
             int zero = 0;
@@ -16,10 +16,10 @@ namespace SchoderChainUnitTests
 		}
 
 #pragma warning disable 1998
-        protected override async Task UndoAsync<BLLParameters>(BLLParameters parameters)
+        protected override async Task UndoAsync()
 #pragma warning restore 1998
         {
-            parameters.StackTrace.Add($"Undo{GetType().Name}");
-		}
-	}
+            _chainData.StackTrace.Add($"Undo{GetType().Name}");
+        }
+    }
 }

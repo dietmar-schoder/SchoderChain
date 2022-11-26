@@ -11,11 +11,11 @@ namespace SchoderChain
 
         public Chain(IEnumerable<IProcessor> allProcessors) => _allProcessors = allProcessors;
 
-        public async Task ProcessAsync(Parameters parameters, params Type[] processorChainTypes)
+        public async Task ProcessAsync(params Type[] processorChainTypes)
         {
 			var firstProcessor = FirstLinkedProcessor(processorChainTypes);
 			if (firstProcessor == null) { return; }
-			await firstProcessor.ProcessChainAsync(parameters);
+			await firstProcessor.ProcessChainAsync();
         }
 
         private IProcessor FirstLinkedProcessor(Type[] processorChainTypes)

@@ -5,6 +5,6 @@ namespace SchoderChain
 {
     public interface IChain
     {
-        Task ProcessAsync(Parameters parameters, params Type[] processorChain);
+        Task ProcessAsync(params Type[] processorChain);
     }
 }

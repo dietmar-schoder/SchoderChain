@@ -2,7 +2,7 @@
 
 namespace SchoderChainUnitTests
 {
-    public class BLLParameters : Parameters
+    public class BLLData : ChainData
     {
         public string Email { get; set; }
     }

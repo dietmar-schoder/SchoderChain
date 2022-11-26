@@ -9,46 +9,51 @@ namespace SchoderChain
 
 		public IProcessor Successor { get; set; }
 
+        protected readonly ChainData _chainData;
         protected readonly ISlackManager _slackManager;
 
-        public Processor(ISlackManager slackManager) => _slackManager = slackManager;
+		public Processor(ChainData chainData, ISlackManager slackManager)
+		{
+            _slackManager = slackManager;
+            _chainData = chainData;
+        }
 
-        public async Task ProcessChainAsync(Parameters parameters)
+        public async Task ProcessChainAsync()
 		{
 			try
 			{
-				parameters.StackTrace.Add(GetType().Name);
-				var ok = await ProcessOkAsync(parameters);
+                _chainData.StackTrace.Add(GetType().Name);
+				var ok = await ProcessOkAsync();
 				if (ok && Successor is not null)
 				{
-					await Successor.ProcessChainAsync(parameters);
+					await Successor.ProcessChainAsync();
 				}
 			}
 			catch (Exception ex)
 			{
-				parameters.Exception = ex;
-				await UndoChainAsync(parameters);
-                await _slackManager.SlackErrorAsync($"{parameters.ChainStart}" +
-					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, parameters.StackTrace)}" +
-                    $"{Environment.NewLine}{Environment.NewLine}{parameters.Exception.Message}{Environment.NewLine}{parameters.Exception.InnerException?.Message}");
+                _chainData.Exception = ex;
+				await UndoChainAsync();
+                await _slackManager.SlackErrorAsync($"{_chainData.ChainStart}" +
+					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, _chainData.StackTrace)}" +
+                    $"{Environment.NewLine}{Environment.NewLine}{_chainData.Exception.Message}{Environment.NewLine}{_chainData.Exception.InnerException?.Message}");
             }
         }
 
-		public async Task UndoChainAsync(Parameters parameters)
+		public async Task UndoChainAsync()
 		{
-			await UndoAsync(parameters);
+			await UndoAsync();
 			if (Predecessor is not null)
 			{
-				await Predecessor.UndoChainAsync(parameters);
+				await Predecessor.UndoChainAsync();
 			}
 		}
 
 #pragma warning disable 1998
-		protected async virtual Task<bool> ProcessOkAsync<T>(T parameters) where T : IParameters => true;
+		protected async virtual Task<bool> ProcessOkAsync() => true;
 #pragma warning restore 1998
 
 #pragma warning disable 1998
-		protected async virtual Task UndoAsync<T>(T parameters) where T : IParameters { }
+		protected async virtual Task UndoAsync() { }
 #pragma warning restore 1998
     }
 }
