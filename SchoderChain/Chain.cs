@@ -7,12 +7,18 @@ namespace SchoderChain
 {
     public class Chain : IChain
 	{
+        private readonly ChainData _chainData;
 		private readonly IEnumerable<IProcessor> _allProcessors;
 
-        public Chain(IEnumerable<IProcessor> allProcessors) => _allProcessors = allProcessors;
+        public Chain(ChainData chainData, IEnumerable<IProcessor> allProcessors)
+		{
+			_chainData = chainData;
+			_allProcessors = allProcessors;
+		}
 
-        public async Task ProcessAsync(params Type[] processorChainTypes)
+        public async Task ProcessAsync(string calledBy, params Type[] processorChainTypes)
         {
+			_chainData.Initialize(calledBy);
 			var firstProcessor = FirstLinkedProcessor(processorChainTypes);
 			if (firstProcessor == null) { return; }
 			await firstProcessor.ProcessChainAsync();

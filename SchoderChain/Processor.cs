@@ -33,7 +33,7 @@ namespace SchoderChain
 			{
                 _chainData.Exception = ex;
 				await UndoChainAsync();
-                await _slackManager.SlackErrorAsync($"{_chainData.ChainStart}" +
+                await _slackManager.SlackErrorAsync($"{_chainData.CalledBy}" +
 					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, _chainData.StackTrace)}" +
                     $"{Environment.NewLine}{Environment.NewLine}{_chainData.Exception.Message}{Environment.NewLine}{_chainData.Exception.InnerException?.Message}");
             }

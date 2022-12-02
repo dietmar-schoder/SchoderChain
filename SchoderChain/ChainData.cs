@@ -6,7 +6,7 @@ namespace SchoderChain
 {
     public class ChainData
     {
-        public string ChainStart { get; set; }
+        public string CalledBy { get; set; }
 
         public List<string> StackTrace { get; set; }
 
@@ -14,9 +14,9 @@ namespace SchoderChain
 
         public ActionResult ActionResult { get; set; }
 
-        public void Initialize(string chainStart)
+        public void Initialize(string calledBy)
         {
-            ChainStart = chainStart;
+            CalledBy = calledBy;
             StackTrace = new List<string>();
             Exception = null;
             ActionResult = null;
