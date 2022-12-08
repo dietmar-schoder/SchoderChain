@@ -8,8 +8,8 @@ namespace SchoderChain
 
         IProcessor Successor { get; set; }
 
-        Task ProcessChainAsync();
+        Task ProcessChainAsync(ChainResult chainResult);
 
-        Task UndoChainAsync();
+        Task UndoChainAsync(ChainResult chainResult);
     }
 }

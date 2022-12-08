@@ -22,7 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="SlackBotMessages" Version="2.1.0" />
   </ItemGroup>
 

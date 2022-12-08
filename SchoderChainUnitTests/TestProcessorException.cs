@@ -2,9 +2,9 @@ using SchoderChain;
 
 namespace SchoderChainUnitTests
 {
-	public class TestProcessorException : Processor
+    public class TestProcessorException : Processor
 	{
-        public TestProcessorException(ChainData chainData, ISlackManager slackManager) : base(chainData, slackManager) { }
+        public TestProcessorException(ISlackManager slackManager) : base(slackManager) { }
 
 #pragma warning disable 1998
         protected override async Task<bool> ProcessOkAsync()
@@ -16,6 +16,6 @@ namespace SchoderChainUnitTests
 		}
 
 #pragma warning disable 1998
-        protected override async Task UndoAsync() => _chainData.StackTrace.Add($"Undo{GetType().Name}");
+        protected override async Task UndoAsync() => _chainResult.StackTrace.Add($"Undo{GetType().Name}");
     }
 }

@@ -9,42 +9,39 @@ namespace SchoderChain
 
 		public IProcessor Successor { get; set; }
 
-        protected readonly ChainData _chainData;
         protected readonly ISlackManager _slackManager;
+        protected ChainResult _chainResult;
 
-		public Processor(ChainData chainData, ISlackManager slackManager)
-		{
-            _slackManager = slackManager;
-            _chainData = chainData;
-        }
+        public Processor(ISlackManager slackManager) => _slackManager = slackManager;
 
-        public async Task ProcessChainAsync()
+        public async Task ProcessChainAsync(ChainResult chainResult)
 		{
+            _chainResult = chainResult;
 			try
 			{
-                _chainData.StackTrace.Add(GetType().Name);
+                _chainResult.StackTrace.Add(GetType().Name);
 				var ok = await ProcessOkAsync();
 				if (ok && Successor is not null)
 				{
-					await Successor.ProcessChainAsync();
+					await Successor.ProcessChainAsync(_chainResult);
 				}
 			}
 			catch (Exception ex)
 			{
-                _chainData.Exception = ex;
-				await UndoChainAsync();
-                await _slackManager.SlackErrorAsync($"{_chainData.CalledBy}" +
-					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, _chainData.StackTrace)}" +
-                    $"{Environment.NewLine}{Environment.NewLine}{_chainData.Exception.Message}{Environment.NewLine}{_chainData.Exception.InnerException?.Message}");
+                _chainResult.Exception = ex;
+				await UndoChainAsync(_chainResult);
+                await _slackManager.SlackErrorAsync($"{_chainResult.CalledBy}" +
+					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, _chainResult.StackTrace)}" +
+                    $"{Environment.NewLine}{Environment.NewLine}{_chainResult.Exception.Message}{Environment.NewLine}{_chainResult.Exception.InnerException?.Message}");
             }
         }
 
-		public async Task UndoChainAsync()
+		public async Task UndoChainAsync(ChainResult chainResult)
 		{
 			await UndoAsync();
 			if (Predecessor is not null)
 			{
-				await Predecessor.UndoChainAsync();
+				await Predecessor.UndoChainAsync(_chainResult);
 			}
 		}
 
