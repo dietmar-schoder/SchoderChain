@@ -1,6 +1,5 @@
 using Moq;
 using SchoderChain;
-using System.Diagnostics;
 
 namespace SchoderChainUnitTests
 {

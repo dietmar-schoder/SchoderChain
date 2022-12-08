@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace SchoderChain
 {
-    public class Chain : IChain
+	public class Chain : IChain
 	{
 		private readonly IEnumerable<IProcessor> _allProcessors;
 
@@ -29,14 +24,11 @@ namespace SchoderChain
 				var processor = _allProcessors.Single(p => p.GetType() == processorType);
 				processor.Successor = null;
 				processor.Predecessor = previousProcessor;
-				if (processor.Predecessor == null)
-				{
-					firstProcessor = processor;
-				}
-				else
+				if (processor.Predecessor != null)
                 {
 					processor.Predecessor.Successor = processor;
 				}
+				firstProcessor = firstProcessor ?? processor;
 				previousProcessor = processor;
 			}
 

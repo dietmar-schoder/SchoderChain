@@ -1,9 +1,6 @@
-using System;
-using System.Threading.Tasks;
-
 namespace SchoderChain
 {
-    public class Processor : IProcessor
+	public class Processor : IProcessor
 	{
 		public IProcessor Predecessor { get; set; }
 
@@ -20,11 +17,8 @@ namespace SchoderChain
 			try
 			{
                 _chainResult.StackTrace.Add(GetType().Name);
-				var ok = await ProcessOkAsync();
-				if (ok && Successor is not null)
-				{
-					await Successor.ProcessChainAsync(_chainResult);
-				}
+				if (!await ProcessOkAsync()) { return; }
+				await (Successor?.ProcessChainAsync(_chainResult) ?? Task.FromResult<object>(null));
 			}
 			catch (Exception ex)
 			{
@@ -39,17 +33,12 @@ namespace SchoderChain
 		public async Task UndoChainAsync(ChainResult chainResult)
 		{
 			await UndoAsync();
-			if (Predecessor is not null)
-			{
-				await Predecessor.UndoChainAsync(_chainResult);
-			}
+			await (Predecessor?.UndoChainAsync(_chainResult) ?? Task.FromResult<object>(null));
 		}
 
 #pragma warning disable 1998
 		protected async virtual Task<bool> ProcessOkAsync() => true;
-#pragma warning restore 1998
 
-#pragma warning disable 1998
 		protected async virtual Task UndoAsync() { }
 #pragma warning restore 1998
     }

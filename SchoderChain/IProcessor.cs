@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace SchoderChain
+﻿namespace SchoderChain
 {
     public interface IProcessor
     {
