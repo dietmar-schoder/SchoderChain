@@ -9,15 +9,12 @@ namespace SchoderChainUnitTests
 
         public ChangeEmailProcessor(BLLData bllData, ISlackManager slackManager) : base(slackManager) => _bllData = bllData;
 
-#pragma warning disable 1998
-        protected override async Task<bool> ProcessOkAsync()
-#pragma warning restore 1998
-        {
-            _bllData.Email = "changed";
-            return true;
-		}
+        protected override void Process() => _bllData.Email = "changed";
 
-#pragma warning disable 1998
-        protected override async Task UndoAsync() => _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+        protected override Task UndoAsync()
+        {
+            _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+            return Task.CompletedTask;
+        }
     }
 }

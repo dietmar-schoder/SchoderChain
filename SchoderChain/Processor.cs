@@ -36,10 +36,17 @@ namespace SchoderChain
 			await (Predecessor?.UndoChainAsync(_chainResult) ?? Task.FromResult<object>(null));
 		}
 
-#pragma warning disable 1998
-		protected async virtual Task<bool> ProcessOkAsync() => true;
+        protected async virtual Task<bool> ProcessOkAsync()
+        {
+            Process();
+            await ProcessAsync();
+            return true;
+        }
 
-		protected async virtual Task UndoAsync() { }
-#pragma warning restore 1998
+        protected async virtual Task ProcessAsync() => await Task.CompletedTask;
+
+        protected virtual void Process() { }
+
+        protected virtual Task UndoAsync() => Task.CompletedTask;
     }
 }

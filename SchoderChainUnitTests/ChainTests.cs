@@ -6,14 +6,21 @@ namespace SchoderChainUnitTests
     [TestClass]
     public class ChainTests
     {
-        // IMPORTANT: Add these lines to your Startup.cs to perform dependency injections for all your processors in one go
+        // IMPORTANT: Add these lines to your Program.cs to perform dependency injections
         //
         // using SchoderChain;
         //
-        // Assembly.GetEntryAssembly().GetTypesAssignableFrom().ToList().ForEach((processor) =>
-        // {
-        //     services.AddScoped(typeof(IProcessor), processor);
-        // });
+        // builder.Services.AddScoped<ISlackManager, SlackManager>();
+        // builder.Services.AddScoped<IChain, Chain>();
+
+        // // Processors
+        // builder.Services.AddScoped<IProcessor, TestProcessor1>();
+        // builder.Services.AddScoped<IProcessor, ChangeEmailProcessor>();
+        // builder.Services.AddScoped<IProcessor, TestProcessor3>();
+        // builder.Services.AddScoped<IProcessor, TestProcessor4>();
+
+        // // Processor data
+        // builder.Services.AddSingleton<BLLData, BLLData>();
 
         [TestMethod]
         public async Task GetResultAsync_Processes_All_Processors()
