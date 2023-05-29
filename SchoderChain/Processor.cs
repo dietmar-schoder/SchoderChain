@@ -38,14 +38,16 @@ namespace SchoderChain
 
         protected async virtual Task<bool> ProcessOkAsync()
         {
-            Process();
             await ProcessAsync();
-            return true;
+            Process();
+            return ProcessOk();
         }
 
         protected async virtual Task ProcessAsync() => await Task.CompletedTask;
 
         protected virtual void Process() { }
+
+        protected virtual bool ProcessOk() => true;
 
         protected virtual Task UndoAsync() => Task.CompletedTask;
     }

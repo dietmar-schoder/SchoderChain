@@ -12,14 +12,13 @@
 
 //        public SlackManager() { }
 
-//        public async Task SlackErrorAsync(string messageBody) => await SlackMessageAsync(SlackSecrets.SLACK_WEBHOOKURL_ERROR, messageBody, Emoji.Bomb);
-
-//        private async Task SlackMessageAsync(string slackWebHookUrl, string messageBody, string emoji)
-//            => await new SbmClient(slackWebHookUrl).Send(new Message
+//        public async Task SlackErrorAsync(string messageBody)
+//            => await new SbmClient(SlackSecrets.SLACK_WEBHOOKURL_ERROR).Send(
+//                new Message
 //                {
-//                    Username = "Shop",
+//                    Username = SlackSecrets.SLACK_USER,
 //                    Text = messageBody,
-//                    IconEmoji = emoji
-//            });
+//                    IconEmoji = Emoji.Bomb
+//                });
 //    }
 //}
