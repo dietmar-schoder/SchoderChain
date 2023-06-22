@@ -20,7 +20,7 @@ namespace SchoderChainUnitTests
         // builder.Services.AddScoped<IProcessor, TestProcessor4>();
 
         // // Processor data
-        // builder.Services.AddSingleton<BLLData, BLLData>();
+        // builder.Services.AddScoped<BLLData, BLLData>();
 
         [TestMethod]
         public async Task GetResultAsync_Processes_All_Processors()
@@ -41,7 +41,7 @@ namespace SchoderChainUnitTests
                 typeof(ChangeEmailProcessor));
 
             // Then I expect both processors to be processed
-            Assert.AreEqual("TestProcessor1ChangeEmailProcessor", string.Concat(result.StackTrace));
+            Assert.AreEqual("TestProcessor1,ChangeEmailProcessor", string.Join(",", result.StackTrace));
 
             // And I expect the ChainStart to be filled
             Assert.AreEqual(nameof(GetResultAsync_Processes_All_Processors), result.CalledBy);
@@ -76,7 +76,7 @@ namespace SchoderChainUnitTests
             // Given I have empty test parameters, three test processors, and a fourth processor throwing an exception, and I have mocked the SlackManager
             var bllData = new BLLData();
             var mockSlackManager = new Mock<ISlackManager>();
-            mockSlackManager.Setup(m => m.SlackErrorAsync(It.IsAny<string>())).Verifiable();
+            mockSlackManager.Setup(m => m.SlackErrorChainResultAsync(It.IsAny<ChainResult>())).Verifiable();
 
             var chain = new Chain(new Processor[]
             {
@@ -95,16 +95,17 @@ namespace SchoderChainUnitTests
                 typeof(TestProcessorException),
                 typeof(TestProcessor4));
 
+            var expectedActions = "TestProcessor1,ChangeEmailProcessor,TestProcessor3,TestProcessorException,UndoTestProcessorException,UndoTestProcessor3,UndoChangeEmailProcessor,UndoTestProcessor1";
             // And I expect the actions until the exception to be processed and then undone again (in the correct order)
-            Assert.AreEqual("TestProcessor1ChangeEmailProcessorTestProcessor3TestProcessorExceptionUndoTestProcessorExceptionUndoTestProcessor3UndoChangeEmailProcessorUndoTestProcessor1",
-                string.Concat(result.StackTrace));
+            Assert.AreEqual(expectedActions, string.Join(",", result.StackTrace));
 
             // And I expect the message in the exception to be the message of the exception thrown
             Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
 
             // And I expect the error to be sent to Slack
-            mockSlackManager.Verify(m => m.SlackErrorAsync(It.Is<string>(
-                p => p == "\r\n--------------------\r\nTestProcessor1\r\nChangeEmailProcessor\r\nTestProcessor3\r\nTestProcessorException\r\nUndoTestProcessorException\r\nUndoTestProcessor3\r\nUndoChangeEmailProcessor\r\nUndoTestProcessor1\r\n\r\nAttempted to divide by zero.\r\n")));
+            mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
+                c => string.Join(",", c.StackTrace).Equals(expectedActions)
+                && c.Exception.Message.Equals("Attempted to divide by zero."))));
         }
 
         [TestMethod]
@@ -142,7 +143,7 @@ namespace SchoderChainUnitTests
                 typeof(ChangeEmailProcessor));
 
             // Then I expect both processors, resp. only one processor to be processed depending on the "stop" condition
-            Assert.AreEqual(processAll ? "TestProcessor1ChangeEmailProcessor" : "TestProcessor1", string.Concat(result.StackTrace));
+            Assert.AreEqual(processAll ? "TestProcessor1,ChangeEmailProcessor" : "TestProcessor1", string.Join(",", result.StackTrace));
         }
 
         [TestMethod]
@@ -150,7 +151,7 @@ namespace SchoderChainUnitTests
         {
             // Given I have empty test parameters and one processor throwing an exception, and I have mocked the SlackManager
             var mockSlackManager = new Mock<ISlackManager>();
-            // mockSlackManager.Setup(m => m.SlackErrorAsync(It.IsAny<string>())).Verifiable();
+            mockSlackManager.Setup(m => m.SlackErrorChainResultAsync(It.IsAny<ChainResult>())).Verifiable();
 
             var chain = new Chain(new Processor[]
             {
@@ -165,8 +166,9 @@ namespace SchoderChainUnitTests
             Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
 
             // And I expect the error to be sent to Slack
-            mockSlackManager.Verify(m => m.SlackErrorAsync(It.Is<string>(
-                p => p == "\r\n--------------------\r\nTestProcessorException\r\nUndoTestProcessorException\r\n\r\nAttempted to divide by zero.\r\n")));
+            mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
+                c => string.Join(",", c.StackTrace).Equals("TestProcessorException,UndoTestProcessorException")
+                && c.Exception.Message.Equals("Attempted to divide by zero."))));
         }
     }
 }

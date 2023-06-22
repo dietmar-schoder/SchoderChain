@@ -24,9 +24,7 @@ namespace SchoderChain
 			{
                 _chainResult.Exception = ex;
 				await UndoChainAsync(_chainResult);
-                await _slackManager.SlackErrorAsync($"{_chainResult.CalledBy}" +
-					$"{Environment.NewLine}{new string('-', 20)}{Environment.NewLine}{string.Join(Environment.NewLine, _chainResult.StackTrace)}" +
-                    $"{Environment.NewLine}{Environment.NewLine}{_chainResult.Exception.Message}{Environment.NewLine}{_chainResult.Exception.InnerException?.Message}");
+                await _slackManager.SlackErrorChainResultAsync(_chainResult);
             }
         }
 

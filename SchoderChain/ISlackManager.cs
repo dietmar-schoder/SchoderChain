@@ -2,6 +2,6 @@
 {
     public interface ISlackManager
     {
-        Task SlackErrorAsync(string messageBody);
+        Task SlackErrorChainResultAsync(ChainResult chainResult);
     }
 }

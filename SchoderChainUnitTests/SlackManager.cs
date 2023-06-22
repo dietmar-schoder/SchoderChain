@@ -1,5 +1,6 @@
-﻿// Install NuGet Package "SlackBotMessages by Paul Seal"
+﻿//// Install NuGet Package "SlackBotMessages by Paul Seal"
 
+//using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 //using SchoderChain;
 //using SlackBotMessages;
 //using SlackBotMessages.Models;
@@ -12,12 +13,15 @@
 
 //        public SlackManager() { }
 
-//        public async Task SlackErrorAsync(string messageBody)
+//        [Obsolete]
+//        public async Task SlackErrorAsync(string messageBody) { }
+
+//        public async Task SlackErrorChainResultAsync(ChainResult chainResult)
 //            => await new SbmClient(SlackSecrets.SLACK_WEBHOOKURL_ERROR).Send(
 //                new Message
 //                {
 //                    Username = SlackSecrets.SLACK_USER,
-//                    Text = messageBody,
+//                    Text = chainResult.ToJson(),
 //                    IconEmoji = Emoji.Bomb
 //                });
 //    }

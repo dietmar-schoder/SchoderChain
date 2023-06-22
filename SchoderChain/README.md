@@ -2,6 +2,8 @@
 
 ## What problem does this solve?
 
+Here is the detailed article: https://www.codeproject.com/Articles/5361589/Resilient-Imperfect-Systems
+
 I wanted a generic pattern that allows me to process anything in small, consecutive steps.
 
 But whenever any of these steps fails, I wanted
