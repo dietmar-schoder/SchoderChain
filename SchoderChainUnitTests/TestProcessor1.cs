@@ -1,6 +1,4 @@
 using SchoderChain;
-using System;
-using System.Threading.Tasks;
 
 namespace SchoderChainUnitTests
 {
@@ -10,10 +8,13 @@ namespace SchoderChainUnitTests
 
         public TestProcessor1(BLLData bllData, ISlackManager slackManager) : base(slackManager) => _bllData = bllData;
 
-#pragma warning disable 1998
-        protected override async Task<bool> ProcessOkAsync() => string.IsNullOrEmpty(_bllData.Email); // Continues the chain only if the email is null/empty
+        protected override async Task<bool> ProcessOkAsync()
+            => await Task.FromResult(string.IsNullOrEmpty(_bllData.Email)); // Continues the chain only if the email is null/empty
 
-#pragma warning disable 1998
-        protected override async Task UndoAsync() => _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+        protected override async Task UndoAsync()
+        {
+            _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+            await Task.CompletedTask;
+        }
     }
 }

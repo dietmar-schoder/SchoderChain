@@ -34,6 +34,5 @@ namespace SchoderChain
 				return firstProcessor;
 			}
         }
-
 	}
 }

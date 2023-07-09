@@ -1,6 +1,6 @@
 namespace SchoderChain
 {
-	public class Processor : IProcessor
+    public class Processor : IProcessor
 	{
 		public IProcessor Predecessor { get; set; }
 
@@ -17,8 +17,11 @@ namespace SchoderChain
 			try
 			{
                 _chainResult.StackTrace.Add(GetType().Name);
-				if (!await ProcessOkAsync()) { return; }
-				await (Successor?.ProcessChainAsync(_chainResult) ?? Task.FromResult<object>(null));
+                if (!await ProcessOkAsync()) { return; }
+                if (!ProcessOk()) { return; }
+                await ProcessAsync();
+                Process();
+                await (Successor?.ProcessChainAsync(_chainResult) ?? Task.CompletedTask);
 			}
 			catch (Exception ex)
 			{
@@ -31,22 +34,17 @@ namespace SchoderChain
 		public async Task UndoChainAsync(ChainResult chainResult)
 		{
 			await UndoAsync();
-			await (Predecessor?.UndoChainAsync(_chainResult) ?? Task.FromResult<object>(null));
+			await (Predecessor?.UndoChainAsync(_chainResult) ?? Task.CompletedTask);
 		}
 
-        protected async virtual Task<bool> ProcessOkAsync()
-        {
-            await ProcessAsync();
-            Process();
-            return ProcessOk();
-        }
+        protected async virtual Task<bool> ProcessOkAsync() => await Task.FromResult(true);
+
+        protected virtual bool ProcessOk() => true;
 
         protected async virtual Task ProcessAsync() => await Task.CompletedTask;
 
         protected virtual void Process() { }
 
-        protected virtual bool ProcessOk() => true;
-
-        protected virtual Task UndoAsync() => Task.CompletedTask;
+        protected async virtual Task UndoAsync() => await Task.CompletedTask;
     }
 }

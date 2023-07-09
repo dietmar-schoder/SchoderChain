@@ -84,7 +84,7 @@ namespace SchoderChainUnitTests
                 new ChangeEmailProcessor(bllData, mockSlackManager.Object),
                 new TestProcessor3(mockSlackManager.Object),
                 new TestProcessor4(mockSlackManager.Object),
-                new TestProcessorException(mockSlackManager.Object)
+                new TestProcessorException1(mockSlackManager.Object)
             });
 
             // When I process a chain containing these processors
@@ -92,10 +92,10 @@ namespace SchoderChainUnitTests
                 typeof(TestProcessor1),
                 typeof(ChangeEmailProcessor),
                 typeof(TestProcessor3),
-                typeof(TestProcessorException),
+                typeof(TestProcessorException1),
                 typeof(TestProcessor4));
 
-            var expectedActions = "TestProcessor1,ChangeEmailProcessor,TestProcessor3,TestProcessorException,UndoTestProcessorException,UndoTestProcessor3,UndoChangeEmailProcessor,UndoTestProcessor1";
+            var expectedActions = "TestProcessor1,ChangeEmailProcessor,TestProcessor3,TestProcessorException1,UndoTestProcessorException1,UndoTestProcessor3,UndoChangeEmailProcessor,UndoTestProcessor1";
             // And I expect the actions until the exception to be processed and then undone again (in the correct order)
             Assert.AreEqual(expectedActions, string.Join(",", result.StackTrace));
 
@@ -147,7 +147,7 @@ namespace SchoderChainUnitTests
         }
 
         [TestMethod]
-        public async Task GetResultAsync_Works_For_One_Failing_Processor()
+        public async Task GetResultAsync_Works_For_One_Failing_Processor_ProcessOkAsync()
         {
             // Given I have empty test parameters and one processor throwing an exception, and I have mocked the SlackManager
             var mockSlackManager = new Mock<ISlackManager>();
@@ -155,19 +155,94 @@ namespace SchoderChainUnitTests
 
             var chain = new Chain(new Processor[]
             {
-                new TestProcessorException(mockSlackManager.Object)
+                new TestProcessorException1(mockSlackManager.Object)
             });
 
             // When I process a chain containing this processor
             var result = await chain.ProcessAsync(string.Empty,
-                typeof(TestProcessorException));
+                typeof(TestProcessorException1));
 
             // And I expect the message in the exception to be the message of the exception thrown
             Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
 
             // And I expect the error to be sent to Slack
             mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
-                c => string.Join(",", c.StackTrace).Equals("TestProcessorException,UndoTestProcessorException")
+                c => string.Join(",", c.StackTrace).Equals("TestProcessorException1,UndoTestProcessorException1")
+                && c.Exception.Message.Equals("Attempted to divide by zero."))));
+        }
+
+        [TestMethod]
+        public async Task GetResultAsync_Works_For_One_Failing_Processor_ProcessOk()
+        {
+            // Given I have empty test parameters and one processor throwing an exception, and I have mocked the SlackManager
+            var mockSlackManager = new Mock<ISlackManager>();
+            mockSlackManager.Setup(m => m.SlackErrorChainResultAsync(It.IsAny<ChainResult>())).Verifiable();
+
+            var chain = new Chain(new Processor[]
+            {
+                new TestProcessorException2(mockSlackManager.Object)
+            });
+
+            // When I process a chain containing this processor
+            var result = await chain.ProcessAsync(string.Empty,
+                typeof(TestProcessorException2));
+
+            // And I expect the message in the exception to be the message of the exception thrown
+            Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
+
+            // And I expect the error to be sent to Slack
+            mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
+                c => string.Join(",", c.StackTrace).Equals("TestProcessorException2,UndoTestProcessorException2")
+                && c.Exception.Message.Equals("Attempted to divide by zero."))));
+        }
+
+        [TestMethod]
+        public async Task GetResultAsync_Works_For_One_Failing_Processor_ProcessAsync()
+        {
+            // Given I have empty test parameters and one processor throwing an exception, and I have mocked the SlackManager
+            var mockSlackManager = new Mock<ISlackManager>();
+            mockSlackManager.Setup(m => m.SlackErrorChainResultAsync(It.IsAny<ChainResult>())).Verifiable();
+
+            var chain = new Chain(new Processor[]
+            {
+                new TestProcessorException3(mockSlackManager.Object)
+            });
+
+            // When I process a chain containing this processor
+            var result = await chain.ProcessAsync(string.Empty,
+                typeof(TestProcessorException3));
+
+            // And I expect the message in the exception to be the message of the exception thrown
+            Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
+
+            // And I expect the error to be sent to Slack
+            mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
+                c => string.Join(",", c.StackTrace).Equals("TestProcessorException3,UndoTestProcessorException3")
+                && c.Exception.Message.Equals("Attempted to divide by zero."))));
+        }
+
+        [TestMethod]
+        public async Task GetResultAsync_Works_For_One_Failing_Processor_Process()
+        {
+            // Given I have empty test parameters and one processor throwing an exception, and I have mocked the SlackManager
+            var mockSlackManager = new Mock<ISlackManager>();
+            mockSlackManager.Setup(m => m.SlackErrorChainResultAsync(It.IsAny<ChainResult>())).Verifiable();
+
+            var chain = new Chain(new Processor[]
+            {
+                new TestProcessorException4(mockSlackManager.Object)
+            });
+
+            // When I process a chain containing this processor
+            var result = await chain.ProcessAsync(string.Empty,
+                typeof(TestProcessorException4));
+
+            // And I expect the message in the exception to be the message of the exception thrown
+            Assert.AreEqual(result.Exception.Message, "Attempted to divide by zero.");
+
+            // And I expect the error to be sent to Slack
+            mockSlackManager.Verify(m => m.SlackErrorChainResultAsync(It.Is<ChainResult>(
+                c => string.Join(",", c.StackTrace).Equals("TestProcessorException4,UndoTestProcessorException4")
                 && c.Exception.Message.Equals("Attempted to divide by zero."))));
         }
     }

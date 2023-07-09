@@ -1,5 +1,4 @@
 using SchoderChain;
-using System.Threading.Tasks;
 
 namespace SchoderChainUnitTests
 {
@@ -7,7 +6,10 @@ namespace SchoderChainUnitTests
 	{
         public TestProcessor3(ISlackManager slackManager) : base(slackManager) { }
 
-#pragma warning disable 1998
-        protected override async Task UndoAsync() => _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+        protected override async Task UndoAsync()
+        {
+            _chainResult.StackTrace.Add($"Undo{GetType().Name}");
+            await Task.CompletedTask;
+        }
     }
 }
