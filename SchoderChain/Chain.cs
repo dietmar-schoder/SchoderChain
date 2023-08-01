@@ -8,9 +8,11 @@ namespace SchoderChain
 
         public Chain(IEnumerable<IProcessor> allProcessors) => _allProcessors = allProcessors;
 
+        private long _startTime = DateTime.UtcNow.Ticks;
+
         public async Task<ChainResult> ProcessAsync(string calledBy, params Type[] processorChainTypes)
         {
-            ChainResult = ChainResult.Create(calledBy);
+            ChainResult = ChainResult.Create(calledBy, _startTime);
             await (FirstLinkedProcessor()?.ProcessChainAsync(ChainResult) ?? Task.FromResult<ChainResult>(null));
             return ChainResult;
 

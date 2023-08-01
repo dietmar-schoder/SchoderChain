@@ -14,17 +14,30 @@ namespace SchoderChain
         public async Task ProcessChainAsync(ChainResult chainResult)
 		{
             _chainResult = chainResult;
+            _chainResult.StartInterval();
+            var processorName = GetType().Name;
 			try
 			{
-                _chainResult.StackTrace.Add(GetType().Name);
-                if (!await ProcessOkAsync()) { return; }
-                if (!ProcessOk()) { return; }
+                _chainResult.StackTrace.Add(processorName);
+                if (!await ProcessOkAsync())
+                {
+                    _chainResult.TrackInterval(processorName);
+                    return;
+                }
+                if (!ProcessOk())
+                {
+                    _chainResult.TrackInterval(processorName);
+                    return;
+                }
                 await ProcessAsync();
                 Process();
+                _chainResult.TrackInterval(processorName);
+
                 await (Successor?.ProcessChainAsync(_chainResult) ?? Task.CompletedTask);
 			}
 			catch (Exception ex)
 			{
+                _chainResult.TrackInterval(processorName);
                 _chainResult.Exception = ex;
 				await UndoChainAsync(_chainResult);
                 await _slackManager.SlackErrorChainResultAsync(_chainResult);
